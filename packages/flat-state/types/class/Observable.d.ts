@@ -4,14 +4,17 @@ export type Middleware<T> = {
     afterChange?: (key: keyof T, newValue: T[keyof T]) => void;
 };
 export type ErrorHandler = (error: Error, context?: string) => void;
-type SubscriberData = {
-    Key: string;
-    Handler: string;
-    "Handler Details": string;
+export type Subscriber = <T>(key: keyof T, handler: Handler<T>) => void;
+export type SubscriberData = {
+    key: string;
+    handler: string;
+    details: string;
 };
 export declare class Observable<T extends Record<string, unknown>> {
     #private;
     onError: ErrorHandler | null;
+    onSubscribe: Subscriber | null;
+    onUnsubscribe: Subscriber | null;
     constructor(subject: T);
     get observed(): T;
     use(middleware: Middleware<T>): void;
@@ -28,4 +31,3 @@ export declare class Observable<T extends Record<string, unknown>> {
         Value: T[keyof T];
     }[] | "No observed values";
 }
-export {};

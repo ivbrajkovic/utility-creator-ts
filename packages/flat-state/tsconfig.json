@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "ESNext",
+    "module": "ESNext",
     "useDefineForClassFields": true,
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -31,5 +31,7 @@
     "noImplicitThis": true
   },
 
-  "include": ["src/**/*.ts"]
+  // "include": ["src/**/*.ts", "node_modules/microbundle/index.d.ts"],
+  "include": ["src/**/*.ts", "index.d.ts"],
+  "exclude": ["node_modules", "dist"]
 }

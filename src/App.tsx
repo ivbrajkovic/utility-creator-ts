@@ -3,18 +3,13 @@ import Cube1 from "./components/Cube1";
 import Cube2 from "./components/Cube2";
 import Cube3 from "./components/Cube3";
 import { useRenderCount } from "./hooks/useRenderCount";
-import { AppContext, AppContextProvider } from "./context/AppObservableContext";
+import {
+  AppContextProvider,
+  useAppContext,
+} from "./context/AppObservableContext";
 import Cube4 from "./components/Cube4";
-import { Middleware } from "@ivbrajkovic/flat-state/types/class/Observable";
-
-const chromeExtensionMiddleware: Middleware<AppContext> = {
-  afterChange: (key, newValue) => {
-    window.postMessage(
-      { type: "OBSERVABLE_UPDATE", payload: { key, newValue } },
-      "*",
-    );
-  },
-};
+import { ObservableTracker } from "@ivbrajkovic/flat-state";
+import "@ivbrajkovic/flat-state/dist/index.css";
 
 function App() {
   const renderCount = useRenderCount("App");
@@ -23,10 +18,8 @@ function App() {
   const [showCube2, toggleCube2] = useReducer((s) => !s, true);
   const [showCube3, toggleCube3] = useReducer((s) => !s, true);
   return (
-    <AppContextProvider
-      initial={{ name: "React", count: 0 }}
-      middlewares={[chromeExtensionMiddleware]}
-    >
+    <AppContextProvider initial={{ name: "React", count: 0 }}>
+      <ObservableTracker useObservableContext={useAppContext} />
       <h1>React Render Count {renderCount}</h1>
       <button onClick={() => setRender(render ^ 1)}>Render</button> cube 1
       <br />

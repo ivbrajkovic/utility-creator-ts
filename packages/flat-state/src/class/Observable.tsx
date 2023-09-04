@@ -9,11 +9,12 @@ export type Middleware<T> = {
 };
 
 export type ErrorHandler = (error: Error, context?: string) => void;
+export type Subscriber = <T>(key: keyof T, handler: Handler<T>) => void;
 
-type SubscriberData = {
-  Key: string;
-  Handler: string;
-  "Handler Details": string;
+export type SubscriberData = {
+  key: string;
+  handler: string;
+  details: string;
 };
 
 export class Observable<T extends Record<string, unknown>> {
@@ -24,6 +25,8 @@ export class Observable<T extends Record<string, unknown>> {
   #middlewares: Set<Middleware<T>> | null = null;
 
   onError: ErrorHandler | null = null;
+  onSubscribe: Subscriber | null = null;
+  onUnsubscribe: Subscriber | null = null;
 
   constructor(subject: T) {
     this.#keys = Object.keys(subject) as Array<keyof T>;
@@ -113,7 +116,10 @@ export class Observable<T extends Record<string, unknown>> {
     const handlers = this.#handlers.get(key) ?? new Set();
     handlers.add(handler as Handler<T>);
     this.#handlers.set(key, handlers);
-    return () => this.unsubscribe(key, handler);
+    if (this.onSubscribe) this.onSubscribe(key, handler as Handler<T>);
+    return () => {
+      this.unsubscribe(key, handler);
+    };
   }
 
   subscribeMany<K extends keyof T>(keys: Array<K>, handler: Handler<T>) {
@@ -124,14 +130,17 @@ export class Observable<T extends Record<string, unknown>> {
   subscribeAll(handler: Handler<T>) {
     if (!this.#allHandlers) this.#allHandlers = new Set();
     this.#allHandlers.add(handler);
+    if (this.onSubscribe) this.onSubscribe("All", handler as Handler<T>);
     return () => {
       this.#allHandlers?.delete(handler);
+      if (this.onUnsubscribe) this.onUnsubscribe("All", handler as Handler<T>);
     };
   }
 
   unsubscribe<K extends keyof T>(key: K, handler: Handler<T, K>) {
     this.#handlers.get(key)?.delete(handler as Handler<T>);
     if (!this.#handlers.get(key)?.size) this.#handlers.delete(key);
+    if (this.onUnsubscribe) this.onUnsubscribe(key, handler as Handler<T>);
   }
 
   unsubscribeAll() {
@@ -157,11 +166,20 @@ export class Observable<T extends Record<string, unknown>> {
       let index = 0;
       handlers.forEach((handler) =>
         tableData.push({
-          Key: String(key),
-          Handler: handler.name || `Anonymous #${index++}`,
-          "Handler Details": handler.toString().substring(0, 100) + "...",
+          key: String(key),
+          handler: handler.name || `Anonymous #${index++}`,
+          details: handler.toString().substring(0, 35) + "...",
         }),
       );
+    });
+
+    this.#allHandlers?.forEach((handler) => {
+      let index = 0;
+      tableData.push({
+        key: "All",
+        handler: handler.name || `Anonymous #${index}`,
+        details: handler.toString().substring(0, 35) + "...",
+      });
     });
 
     if (output) console.table(tableData);
