@@ -1,4 +1,4 @@
-import { ObservableContextFactory } from "@ivbrajkovic/flat-state";
+import { ObservableContextFactory } from "@ivbrajkovic/observable-context";
 
 export type AppContext = {
   name: string;

@@ -20,6 +20,11 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "flat-state/class", "flat-state/factories", "src/context"],
+  "include": [
+    "src",
+    "observable-context/class",
+    "observable-context/factories",
+    "src/context"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

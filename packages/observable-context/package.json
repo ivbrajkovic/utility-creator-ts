@@ -1,7 +1,7 @@
 {
-  "name": "@ivbrajkovic/flat-state",
+  "name": "@ivbrajkovic/observable-context",
   "author": "Ivan Brajković",
-  "description": "Simple reactive flat state",
+  "description": "Simple reactive context state",
   "license": "ISC",
   "version": "1.0.0",
   "type": "module",

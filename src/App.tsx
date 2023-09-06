@@ -8,8 +8,8 @@ import {
   useAppContext,
 } from "./context/AppObservableContext";
 import Cube4 from "./components/Cube4";
-import { ObservableTracker } from "@ivbrajkovic/flat-state";
-import "@ivbrajkovic/flat-state/dist/index.css";
+import "@ivbrajkovic/observable-context/dist/index.css";
+import { ObservableTracker } from "@ivbrajkovic/observable-context";
 
 function App() {
   const renderCount = useRenderCount("App");
