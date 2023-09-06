@@ -15,9 +15,4 @@ module.exports = {
       { allowConstantExport: true },
     ],
   },
-  env: {
-    browser: true,
-    es6: true,
-    chrome: true,
-  },
 };

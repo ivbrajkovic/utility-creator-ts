@@ -1,7 +1,7 @@
 import { Observable } from "class/Observable";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const useSubscribeFactory = <T extends Record<string, unknown>>(
+const subscribeHookFactory = <T extends Record<string, unknown>>(
   useObservableContext: () => Observable<T>,
 ) => {
   const useSubscribe = <K extends keyof T>(
@@ -32,4 +32,4 @@ const useSubscribeFactory = <T extends Record<string, unknown>>(
   return useSubscribe;
 };
 
-export default useSubscribeFactory;
+export default subscribeHookFactory;

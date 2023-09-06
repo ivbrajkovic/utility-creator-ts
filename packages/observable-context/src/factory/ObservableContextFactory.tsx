@@ -1,9 +1,9 @@
 import { ReactNode, createContext, useState } from "react";
 import { Observable } from "../class/Observable";
-import useObservableContextFactory from "hooks/useObservableContextFactory";
-import useSubscribeFactory from "hooks/useSubscribeFactory";
-import useSubscribeManyFactory from "hooks/useSubscribeManyFactory";
-import useSubscribeAllFactory from "hooks/useSubscribeAllFactory";
+import contextHookFactory from "hooks/useObservableContextFactory";
+import subscribeHookFactory from "hooks/useSubscribeFactory";
+import subscribeManyHookFactory from "hooks/useSubscribeManyFactory";
+import subscribeAllHookFactory from "hooks/useSubscribeAllFactory";
 
 export type ObservableContext<T extends Record<string, unknown>> =
   Observable<T> | null;
@@ -13,7 +13,9 @@ type ContextProviderProps<T> = {
   children: ReactNode;
 };
 
-export function observableContextFactory<T extends Record<string, unknown>>() {
+export function observableContextFactory<T extends Record<string, unknown>>(
+  name = "ContextProvider",
+) {
   const ObservableContext = createContext<ObservableContext<T>>(null);
 
   function ContextProvider(props: ContextProviderProps<T>) {
@@ -28,16 +30,16 @@ export function observableContextFactory<T extends Record<string, unknown>>() {
     );
   }
 
-  const useObservableContext = useObservableContextFactory(ObservableContext);
-  const useSubscribe = useSubscribeFactory(useObservableContext);
-  const useSubscribeMany = useSubscribeManyFactory(useObservableContext);
-  const useSubscribeAll = useSubscribeAllFactory(useObservableContext);
+  const useObservableContext = contextHookFactory(name, ObservableContext);
+  const useSubscribe = subscribeHookFactory(useObservableContext);
+  const useSubscribeMany = subscribeManyHookFactory(useObservableContext);
+  const useSubscribeAll = subscribeAllHookFactory(useObservableContext);
 
-  return [
+  return {
     ContextProvider,
     useObservableContext,
     useSubscribe,
     useSubscribeMany,
     useSubscribeAll,
-  ] as const;
+  };
 }

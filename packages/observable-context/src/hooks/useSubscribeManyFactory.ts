@@ -1,7 +1,7 @@
 import { Observable } from "class/Observable";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const useSubscribeManyFactory = <T extends Record<string, unknown>>(
+const subscribeManyHookFactory = <T extends Record<string, unknown>>(
   useObservableContext: () => Observable<T>,
 ) => {
   const useSubscribeMany = <K extends keyof T>(
@@ -45,4 +45,4 @@ const useSubscribeManyFactory = <T extends Record<string, unknown>>(
   return useSubscribeMany;
 };
 
-export default useSubscribeManyFactory;
+export default subscribeManyHookFactory;

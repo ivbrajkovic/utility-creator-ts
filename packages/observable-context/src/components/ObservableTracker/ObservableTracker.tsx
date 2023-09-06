@@ -22,14 +22,14 @@ function ObservableTracker<T extends Record<string, unknown>>(props: {
 
     observable.onSubscribe = getSubscribers;
     observable.onUnsubscribe = getSubscribers;
-  }, []);
+  }, [observable]);
 
   useEffect(() => {
     const subscription = observable.subscribeAll((key, value) =>
       setState((state) => ({ ...state, [key]: value })),
     );
     return subscription;
-  }, []);
+  }, [observable]);
 
   useEffect(() => {
     if (!observableTrackerRef.current) return;
