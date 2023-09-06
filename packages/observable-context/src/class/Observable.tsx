@@ -3,11 +3,6 @@ export type Handler<T, K extends keyof T = keyof T> = (
   value: T[K],
 ) => void;
 
-export type Middleware<T> = {
-  beforeChange?: (key: keyof T, newValue: T[keyof T]) => void;
-  afterChange?: (key: keyof T, newValue: T[keyof T]) => void;
-};
-
 export type ErrorHandler = (error: Error, context?: string) => void;
 export type Subscriber = <T>(key: keyof T, handler: Handler<T>) => void;
 
@@ -22,7 +17,6 @@ export class Observable<T extends Record<string, unknown>> {
   #keys: Array<keyof T>;
   #handlers: Map<keyof T, Set<Handler<T>>>;
   #allHandlers: Set<Handler<T>> | null = null;
-  #middlewares: Set<Middleware<T>> | null = null;
 
   onError: ErrorHandler | null = null;
   onSubscribe: Subscriber | null = null;
@@ -43,13 +37,9 @@ export class Observable<T extends Record<string, unknown>> {
         // Do not update property if old and new value are equal
         if (newValue === reflectValue) return true;
 
-        this.#runMiddlewaresBeforeChange(property, newValue);
-
         // Update property
         const success = Reflect.set(target, property, newValue, receiver);
         if (!success) return false;
-
-        this.#runMiddlewaresAfterChange(property, newValue);
 
         const invokeHandler = (handler: Handler<T>) => {
           try {
@@ -73,37 +63,6 @@ export class Observable<T extends Record<string, unknown>> {
 
   get observed() {
     return this.#subjectProxy as T;
-  }
-
-  use(middleware: Middleware<T>) {
-    if (!this.#middlewares) this.#middlewares = new Set();
-    this.#middlewares.add(middleware);
-  }
-
-  #runMiddlewaresBeforeChange(key: keyof T, value: T[keyof T]) {
-    this.#middlewares?.forEach((middleware) => {
-      try {
-        middleware.beforeChange?.(key, value);
-      } catch (error) {
-        this.#handleError(
-          error,
-          `Middleware (beforeChange) for key: ${String(key)}`,
-        );
-      }
-    });
-  }
-
-  #runMiddlewaresAfterChange(key: keyof T, value: T[keyof T]) {
-    this.#middlewares?.forEach((middleware) => {
-      try {
-        middleware.afterChange?.(key, value);
-      } catch (error) {
-        this.#handleError(
-          error,
-          `Middleware (afterChange) for key: ${String(key)}`,
-        );
-      }
-    });
   }
 
   #handleError(error: Error | unknown, context?: string) {
